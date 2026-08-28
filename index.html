@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hoi P'loy — Business Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-mark"><span>HOI</span><span>P'LOY</span></div>
+    <div class="title-block">
+      <h1>Business Intelligence</h1>
+      <p>Sales, margin &amp; customer insight · Cin7 sales data</p>
+    </div>
+    <div class="spacer"></div>
+    <div class="controls">
+      <div class="control">
+        <label for="fySel">Financial year</label>
+        <select id="fySel"></select>
+      </div>
+      <label class="toggle"><input type="checkbox" id="cmpToggle" checked /> Compare to prior year</label>
+      <span class="badge-src" id="asof">—</span>
+    </div>
+  </header>
+
+  <nav class="sectionnav" id="sectionnav">
+    <button class="navbtn active" data-sec="overview">Overview</button>
+    <button class="navbtn" data-sec="dim" data-dim="category">Categories</button>
+    <button class="navbtn" data-sec="dim" data-dim="product">Products</button>
+    <button class="navbtn" data-sec="dim" data-dim="tier">Price Tier</button>
+    <button class="navbtn" data-sec="dim" data-dim="saleType">Sales Type</button>
+    <button class="navbtn" data-sec="customers">Customers</button>
+  </nav>
+
+  <main id="app">
+    <div class="loading" id="loading">Lighting things up…</div>
+
+    <!-- ===================== OVERVIEW ===================== -->
+    <div class="section" id="sec-overview" style="display:none">
+      <section class="grid kpis" id="kpis"></section>
+      <section class="grid row-1 mt">
+        <div class="card">
+          <h3>Monthly Sales &amp; Gross Profit Margin</h3>
+          <p class="sub" id="ovTrendSub">Sales (bars) with GP margin % (line) across the financial year</p>
+          <div class="chart tall" id="ovTrend"></div>
+        </div>
+      </section>
+      <section class="grid row-2 mt">
+        <div class="card">
+          <h3>Sales by Category</h3><p class="sub">YTD revenue overview · drill in on the Categories tab</p>
+          <div class="chart tall" id="ovCatRev"></div>
+        </div>
+        <div class="card">
+          <h3>Sales by Product</h3><p class="sub">YTD top products · drill in on the Products tab</p>
+          <div class="chart tall" id="ovProd"></div>
+        </div>
+      </section>
+      <section class="grid row-3 mt">
+        <div class="card">
+          <h3>Sales by Price Tier</h3><p class="sub">Share of revenue this YTD</p>
+          <div class="chart" id="ovTier"></div>
+        </div>
+        <div class="card">
+          <h3>Sales by Sale Type</h3><p class="sub">Share of revenue this YTD</p>
+          <div class="chart" id="ovType"></div>
+        </div>
+        <div class="card">
+          <h3>Top Customers</h3><p class="sub">YTD revenue · drill in on the Customers tab</p>
+          <div class="chart" id="ovCust"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ============= GENERIC DIMENSION SECTION ============= -->
+    <div class="section" id="sec-dim" style="display:none">
+      <div class="sectionhead">
+        <h2 id="dimTitle">Categories</h2>
+        <div class="seccontrols">
+          <div class="segmented" id="metricSeg">
+            <button class="seg active" data-m="sales">Revenue</button>
+            <button class="seg" data-m="cogs">Cost of Sales</button>
+            <button class="seg" data-m="gp">Gross Profit</button>
+          </div>
+          <div class="control inline">
+            <label id="itemLabel">Category</label>
+            <div id="itemMs"></div>
+          </div>
+          <div class="control inline">
+            <label for="monthSel">Month</label>
+            <select id="monthSel"></select>
+          </div>
+          <label class="toggle dark" id="showAllWrap"><input type="checkbox" id="showAllToggle" /> Show all</label>
+        </div>
+      </div>
+      <section class="grid row-2">
+        <div class="card">
+          <h3 id="dimRankTitle">Revenue by Category</h3>
+          <p class="sub" id="dimRankSub">Ranked for the selected period</p>
+          <div class="chart tall" id="dimRank"></div>
+        </div>
+        <div class="card">
+          <div class="cardhead">
+            <div>
+              <h3 id="dimMonthlyTitle">Revenue by Category, per month</h3>
+              <p class="sub" id="dimMonthlySub">Monthly breakdown across the financial year</p>
+            </div>
+            <div class="control inline">
+              <label for="monthlyPriorSel">Compare</label>
+              <select id="monthlyPriorSel">
+                <option value="0">This year only</option>
+                <option value="1">+ prior year</option>
+                <option value="2">+ prior 2 years</option>
+              </select>
+            </div>
+          </div>
+          <div class="chart tall" id="dimMonthly"></div>
+        </div>
+      </section>
+      <section class="grid row-1 mt">
+        <div class="card">
+          <div class="cardhead">
+            <div>
+              <h3 id="dimGpTitle">Gross Profit Margin by Category</h3>
+              <p class="sub" id="dimGpSub">GP % = total gross profit ÷ total sales (sales-weighted) · column N</p>
+            </div>
+            <div class="control inline">
+              <label for="gpPriorSel">Compare</label>
+              <select id="gpPriorSel"></select>
+            </div>
+          </div>
+          <div class="chart tall" id="dimGpPct"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===================== CUSTOMERS ===================== -->
+    <div class="section" id="sec-customers" style="display:none">
+      <div class="sectionhead">
+        <h2>Customers</h2>
+        <div class="seccontrols">
+          <div class="control inline">
+            <label>Customer</label>
+            <div id="custMs"></div>
+          </div>
+          <div class="control inline">
+            <label for="custMonthSel">Month</label>
+            <select id="custMonthSel"></select>
+          </div>
+          <label class="toggle dark"><input type="checkbox" id="custShowAll" /> Show all</label>
+        </div>
+      </div>
+      <section class="grid kpis3" id="custKpis"></section>
+      <section class="grid row-2 mt">
+        <div class="card">
+          <h3>Top Customers by Revenue</h3>
+          <p class="sub">Click a customer to drill into their profile</p>
+          <div class="chart xtall" id="custRank"></div>
+        </div>
+        <div class="card" id="custDrillCard">
+          <h3 id="custDrillName">Select a customer</h3>
+          <p class="sub" id="custDrillSub">Their price tier, sale type and what they buy</p>
+          <div id="custDrillBody" class="drillempty">Click a customer on the left to see their profile.</div>
+        </div>
+      </section>
+    </div>
+
+    <p class="foot" id="foot"></p>
+  </main>
+
+  <script src="vendor/echarts.min.js"></script>
+  <script src="vendor/papaparse.min.js"></script>
+  <!-- load app.js with a cache-buster so a normal reload always gets the latest -->
+  <script>document.write('<script src="app.js?t=' + Date.now() + '"></scr'+'ipt>');</script>
+</body>
+</html>

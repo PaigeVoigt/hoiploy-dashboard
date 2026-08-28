@@ -1,0 +1,5 @@
+credentials/
+data/
+dashboard.html
+__pycache__/
+.DS_Store
